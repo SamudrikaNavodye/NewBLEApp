@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import java.util.UUID;
 
-public class Properties extends AppCompatActivity {
+public class Properties extends AppCompatActivity implements GattManager.CharacteristicReadListener {
     private static final String TAG = "Properties";
     private BluetoothGattCharacteristic characteristic;
     private BluetoothGatt gatt;
@@ -59,6 +59,18 @@ public class Properties extends AppCompatActivity {
         }
 
         setupButtons();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GattManager.addCharacteristicReadListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GattManager.removeCharacteristicReadListener(this);
     }
 
     private BluetoothGattCharacteristic findCharacteristicByUUID(String uuid) {
@@ -112,8 +124,19 @@ public class Properties extends AppCompatActivity {
             Log.e(TAG, "Characteristic read failed");
             Toast.makeText(this, "Failed to initiate characteristic read", Toast.LENGTH_SHORT).show();
         } else {
-            displayCharacteristicValue(characteristic);
+            // we can't read here, we have to wait for the read to complete
         }
+    }
+
+    @Override
+    public void characteristicRead(BluetoothGattCharacteristic characteristic) {
+        // this gets called from GattManager now
+        String value = characteristic.getStringValue(0);
+        new AlertDialog.Builder(this)
+                .setTitle("Characteristic Value")
+                .setMessage("Value: " + value)
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
