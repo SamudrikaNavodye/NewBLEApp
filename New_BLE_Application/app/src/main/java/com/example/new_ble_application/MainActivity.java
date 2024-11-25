@@ -241,10 +241,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                // Pass the value to Properties to display
-                Intent intent = new Intent(MainActivity.this, Properties.class);
-                intent.putExtra("characteristic", characteristic);
-                startActivity(intent);
+//                // Pass the value to Properties to display
+//                Intent intent = new Intent(MainActivity.this, Properties.class);
+//                intent.putExtra("characteristic", characteristic);
+//                startActivity(intent);
+                // send this read to all who are subscribed
+                GattManager.characteristicRead(characteristic);
             }
         }
 
