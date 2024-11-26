@@ -36,5 +36,4 @@ public class GattManager {
     public interface CharacteristicReadListener {
         void characteristicRead(BluetoothGattCharacteristic characteristic);
     }
-
 }

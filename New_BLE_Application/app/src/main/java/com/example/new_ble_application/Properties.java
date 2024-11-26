@@ -124,9 +124,7 @@ public class Properties extends AppCompatActivity implements GattManager.Charact
             Log.e(TAG, "Characteristic read failed");
             Toast.makeText(this, "Failed to initiate characteristic read", Toast.LENGTH_SHORT).show();
         } else {
-            //displayCharacteristicValue(characteristic);
             // we can't read here, we have to wait for the read to complete
-//            characteristicRead(characteristic);
         }
     }
 
@@ -153,6 +151,17 @@ public class Properties extends AppCompatActivity implements GattManager.Charact
 //            }
 //        }
 //    };
+    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic charac, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                runOnUiThread(() -> displayCharacteristicValue(charac));
+            } else {
+                Log.e(TAG, "Failed to read characteristic, status: " + status);
+                runOnUiThread(() -> Toast.makeText(Properties.this, "Read failed", Toast.LENGTH_SHORT).show());
+            }
+        }
+    };
 
     private void displayCharacteristicValue(BluetoothGattCharacteristic characteristic) {
         String value = characteristic.getStringValue(0);
